@@ -1,0 +1,35 @@
+<aiml version="1.0.1" encoding="UTF-8">
+  
+    <category>
+        <pattern>LOAD AIML B</pattern>
+        <template>
+			<learn>super\bot_profile.aiml</learn>
+			<learn>super\client_profile.aiml</learn>
+			<learn>super\contactaction.aiml</learn>
+			<learn>super\date.aiml</learn>
+			<learn>super\dialog.aiml</learn>
+			<learn>super\familiar.aiml</learn>
+			<learn>super\help.aiml</learn>
+			<learn>super\inappropriate.aiml</learn>
+			<learn>super\inquiry.aiml</learn>
+			<learn>super\insults.aiml</learn>
+			<learn>super\ontology.aiml</learn>
+			<learn>super\oob.aiml</learn>
+			<learn>super\personality.aiml</learn>
+			<learn>super\picture.aiml</learn>
+			<learn>super\profanity.aiml</learn>
+			<learn>super\reductions_update.aiml</learn>
+			<learn>super\reductions1.aiml</learn>
+			<learn>super\sraix.aiml</learn>
+			<learn>super\test.aiml</learn>
+			<learn>super\testjp.aiml</learn>
+			<learn>super\that.aiml</learn>
+			<learn>super\train.aiml</learn>
+			<learn>super\udc.aiml</learn>
+			<learn>super\update.aiml</learn>
+			<learn>super\utilities.aiml</learn>
+        </template>
+        
+    </category>
+
+</aiml>

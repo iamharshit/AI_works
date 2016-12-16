@@ -1,0 +1,151 @@
+<script type="text/javascript">
+      var socket = null;
+      var isopen = false;
+
+      window.onload = function() {
+
+            socket = new WebSocket("ws://127.0.0.1:9000");
+            socket.binaryType = "arraybuffer";
+
+            socket.onopen = function() {
+               console.log("Connected!");
+               isopen = true;
+               socket.send("AAND1");
+            }
+
+            socket.onmessage = function(e) {
+               if (typeof e.data == "string") {
+                    console.log("Response from Hardware: " + e.data);
+                    document.getElementById('robot').innerHTML = "Robot >>"+e.data;
+					var msg = new SpeechSynthesisUtterance(e.data);
+					window.speechSynthesis.speak(msg);
+               } 
+               else {
+                    var arr = new Uint8Array(e.data);
+                    var hex = '';
+                    for (var i = 0; i < arr.length; i++) {
+                       hex += ('00' + arr[i].toString(16)).substr(-2);
+                    }
+                    console.log("Binary message received: " + hex);
+               }
+            }
+            socket.onclose = function(e) {
+               console.log("Connection closed.");
+               socket = null;
+               isopen = false;
+            }
+      };
+
+      function myFunction() {
+          var name = document.getElementById('final_span').innerHTML+document.getElementById('interim_span').innerHTML;      
+            if (isopen){
+               socket.send("ASESP"+name);
+               console.log("Text message sent. " +name);               
+            } 
+            else {
+              console.log("Connection not opened.")
+              console.log("Text message failed to send. " +name); 
+            }
+      };
+	  
+	  function clear_it(){
+			document.getElementById('final_span').innerHTML=''
+			document.getElementById('interim_span').innerHTML='';
+	  }
+
+      function sendBinary() {
+            if (isopen) {
+               var buf = new ArrayBuffer(32);
+               var arr = new Uint8Array(buf);
+               for (i = 0; i < arr.length; ++i) arr[i] = i;
+               socket.send(buf);
+               console.log("Binary message sent.");
+            } else {
+               console.log("Connection not opened.")
+            }
+      };
+</script>
+
+
+
+
+
+<div>
+  <a href="#" id="start_button" onclick="startDictation(event)">Dictate</a>
+</div>
+ 
+<div id="results">
+    Human >> 
+    <span id="final_span" class="final"></span>
+    <span id="interim_span" class="interim"></span>
+</div>
+ <button onclick="myFunction()">SEND</button>
+ <button onclick="clear_it()">CLEAR</button>
+<div id="robot">
+</div>
+
+
+
+<script type="text/javascript">
+var final_transcript = '';
+var recognizing = false;
+ 
+if ('webkitSpeechRecognition' in window) {
+ 
+  var recognition = new webkitSpeechRecognition();
+ 
+  recognition.continuous = true;
+  recognition.interimResults = true;
+ 
+  recognition.onstart = function() {
+    recognizing = true;
+  };
+ 
+  recognition.onerror = function(event) {
+    console.log(event.error);
+  };
+ 
+  recognition.onend = function() {
+    recognizing = false;
+  };
+ 
+  recognition.onresult = function(event) {
+    var interim_transcript = '';
+    for (var i = event.resultIndex; i < event.results.length; ++i) {
+      if (event.results[i].isFinal) {
+        final_transcript += event.results[i][0].transcript;
+      } else {
+        interim_transcript += event.results[i][0].transcript;
+      }
+    }
+    final_transcript = capitalize(final_transcript);
+    final_span.innerHTML = linebreak(final_transcript);
+    interim_span.innerHTML = linebreak(interim_transcript);
+    console.log("final_transcript = ",linebreak(final_transcript));
+    console.log("interim_transcript = ",linebreak(interim_transcript));
+  };
+}
+ 
+var two_line = /\n\n/g;
+var one_line = /\n/g;
+function linebreak(s) {
+  return s.replace(two_line, '<p></p>').replace(one_line, '<br>');
+}
+ 
+function capitalize(s) {
+  return s.replace(s.substr(0,1), function(m) { return m.toUpperCase(); });
+}
+ 
+function startDictation(event) {
+  if (recognizing) {
+    recognition.stop();
+    return;
+  }
+  final_transcript = '';
+  recognition.lang = 'en-US';
+  recognition.start();
+  //document.getElementById('name').value = ''
+  final_span.innerHTML = '';
+  interim_span.innerHTML = '';
+}
+</script>
